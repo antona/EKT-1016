@@ -1,3 +1,4 @@
+/* DUPLICATE OF "StepFull.ino", STEP1016C IS ITS ORIGINAL NAME
 /*
   EKT-1016 Rev C Full Step Motor Test Driver
   ElectronicKit.com
