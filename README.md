@@ -47,7 +47,22 @@ All other jumpers are the factory default settings.
 -------------------------
 'StepFull.ino' is a collection of 4 processes that can control 4 stepper motors on Port A and B. Each time a process is invoked, the stepper routine named will move 1 full step.  The user specifies direction by using the boolean true/false as a parameter on entry for a forward/backward step. More detailed info is in the file text heading.
 This sketch repeats stepping all 4 motors 10 steps/second to see how it operates.  The user would use repeated process executions to move multiple steps per the desired step rate.
-
+---------------------
+ 'StepWFrevC.ino'
+ Stepper Motor Controller       Rev C
+ Wave, Full or Half Stepper Motor Drivers
+ 
+ This test driver sketch wave-steps, full-steps or half-steps
+ all 16 drivers on port A and B.
+ The upper and lower 4 bits make up 2 stepper motor drives
+ at 100ms / step (change time in main loop).
+ 
+ Choose either wave, full or half step operation by
+ enabling one of the following "#define" pseudo ops:
+ 
+ #define WAVE
+ #define FULL
+ #define HALF (default code setting)
 -------------------------
 
 These examples should be a good starting point for using the EKT-1016 Shield and getting a basic understanding of how the drivers are controlled. 
