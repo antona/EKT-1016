@@ -1,6 +1,7 @@
 /*
   EKT-1016 Digital Power Driver Shield 
  Stepper Motor Controller       Rev C
+ StepWFrevC.ino
  
  Wave, Full or Half Stepper Motor Drivers
  
@@ -139,11 +140,11 @@ byte StepUpr[LstStep + 1] =       //WAVE STEP UPPER NIBBLE
 #endif
 /*
   FULL STEP TABLE
- S  A  B  C  D
- 1  1  0  1  0
- 2  0  1  1  0
- 3  0  1  0  1
- 4  1  0  0  1
+ S   A  B  C  D
+ 1   1  1  0  0
+ 2   0  1  1  0
+ 3   0  0  1  1
+ 4   1  0  0  1
  */
 #ifdef FULL                      //Full steps      
 const int LstStep = 3;           //Last FULL step entry

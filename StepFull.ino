@@ -31,13 +31,6 @@
   http://www.electronickit.com/kitproduct/ekt-1016/man1016.pdf
   http://www.antona.com/EKT/kitproduct/ekt-1016/man1016.pdf
 
-  Step C0 C1 C2 C3
-  1  1  0  1  0
-  2  0  1  1  0
-  3  0  1  0  1
-  4  1  0  0  1
-*/
-
 #include "Wire.h"
 
 // Enable Driver Output
@@ -74,28 +67,31 @@ byte Mot12 = B00000000;					//Step motor 1 and 2
 byte Mot34 = B00000000;					//Step motor 3 and 4
 
 /*
-  FULL STEP TABLES
-  Step C0 C1 C2 C3
-  1  1  0  1  0
-  2  0  1  1  0
-  3  0  1  0  1
-  4  1  0  0  1
-*/
+  FULL STEP TABLE
+ S   A  B  C  D
+ 1   1  1  0  0
+ 2   0  1  1  0
+ 3   0  0  1  1
+ 4   1  0  0  1
+ */
+#ifdef FULL                      //Full steps      
+const int LstStep = 3;           //Last FULL step entry
+byte MskLim = B00000011;         //Mask bits 2 to 7
 //Stepper Lower Nibble Masks
-byte StepLwr[4] =                   //FULL STEPS LOWER NIBBLE
+byte StepLwr[LstStep + 1] =      //FULL STEPS LOWER NIBBLE
 {
-  B00001010,
+  B00001100,
   B00000110,
-  B00000101,
-  B00001001,
+  B00000011,
+  B00001001
 };
 //Stepper Upper Nibble Masks
-byte StepUpr[4] =                   //FULL STEPS UPPER NIBBLE
+byte StepUpr[LstStep + 1] =       //FULL STEPS UPPER NIBBLE
 {
-  B10100000,
+  B11000000,
   B01100000,
-  B01010000,
-  B10010000,
+  B00110000,
+  B10010000
 };
 
 byte MaskUpr = B00001111;		//Mask out upr nibble
@@ -118,14 +114,14 @@ void setup()
 
   // Set Port A and B to Output
 
-  Wire.beginTransmission(Base);   // Base address
-  Wire.write(0x00); 		 		      // IODIRA set port A I/O
-  Wire.write(0x00); 		 		      // Port A = output
+  Wire.beginTransmission(Base);   	// Base address
+  Wire.write(0x00); 		 		// IODIRA set port A I/O
+  Wire.write(0x00); 		 		// Port A = output
   Wire.endTransmission();
 
   Wire.beginTransmission(Base); 	// Base address
-  Wire.write(0x01); 		 		      // IODIRB set port B I/O
-  Wire.write(0x00); 		 		      // Port B = output
+  Wire.write(0x01); 		 		// IODIRB set port B I/O
+  Wire.write(0x00); 		 		// Port B = output
   Wire.endTransmission();
   /*
       ----------------------------
@@ -138,13 +134,13 @@ void setup()
 }
 void loop()
 {
-  StepAUpr(true);		  //Chan A upr forward 1 step
+  StepAUpr(true);		//Chan A upr forward 1 step
   StepALwr(false);		//Chan A Lwr backward 1 step
-  StepBUpr(true);		  //Chan B upr forward 1 step
+  StepBUpr(true);		//Chan B upr forward 1 step
   StepBLwr(false);		//Chan B Lwr backward 1 step
   DrvAB();		        //Drive output pins
-  Tp();                         //Serial output bit patterns
-  delay(100); 			  // 1/10 second/step
+  Tp();                 //Serial output bit patterns
+  delay(100); 			// 1/10 second/step
 }
 /*
   ------------------------------
@@ -153,7 +149,7 @@ void loop()
 */
 void StepAUpr(boolean Dir)
 {
-  if (Dir)			      //Forward ?
+  if (Dir)			      	//Forward ?
   {
     CtAUp++;			    //Move ahead 1 full step
     CtAUp = CtAUp & B00000011;  //Reset to 00 if >= 4
@@ -162,9 +158,9 @@ void StepAUpr(boolean Dir)
   else				        //Step Backward
   {
     CtAUp--;			    //Move back 1 full step
-    if (CtAUp < 0)		//Below beginning of table?
+    if (CtAUp < 0)			//Below beginning of table?
     {
-      CtAUp = 3;		  //Reset to state end
+      CtAUp = 3;		  	//Reset to table end
     }
   }
   Mot12 = ((Mot12 & MaskUpr) | StepUpr[CtAUp]);
@@ -178,14 +174,14 @@ void StepALwr(boolean Dir)
 {
   if (Dir)			        //Forward ?
   {
-    CtALw++;			      //Move ahead 1 full step
+    CtALw++;			    //Move ahead 1 full step
     CtALw = CtALw & B00000011;  //Reset to 00 if >= 4
   }
 
-  else				          //Step Backward
+  else				        //Step Backward
   {
-    CtALw--;			      //Move back 1 full step
-    if (CtALw < 0)		  //Below beginning of table?
+    CtALw--;			    //Move back 1 full step
+    if (CtALw < 0)		  	//Below beginning of table?
     {
       CtALw = 3;		    //Reset to state end
     }
